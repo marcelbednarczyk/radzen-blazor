@@ -197,22 +197,26 @@
     {
         if (Tree != null)
         {
+            var checkedValues = GetCheckedValues();
+
             if (Tree.AllowCheckChildren)
             {
                 if (value == true)
                 {
-                    await Tree.SetCheckedValues(GetCheckedValues().Union(GetValueAndAllChildValues()));
+                    checkedValues = checkedValues.Union(GetValueAndAllChildValues());
                 }
                 else
                 {
-                    await Tree.SetCheckedValues(GetCheckedValues().Except(GetValueAndAllChildValues()));
+                   checkedValues = checkedValues.Except(GetValueAndAllChildValues());
                 }
             }
 
             if (Tree.AllowCheckParents)
             {
-                await UpdateParents();
+                checkedValues = UpdateCheckedValuesWithParents(checkedValues);
             }
+
+            await Tree.SetCheckedValues(checkedValues);
         }
     }
 
@@ -267,10 +271,8 @@
         return GetAllChildValues().Any(i => checkedValues.Contains(i));
     }
 
-    async Task UpdateParents()
+    IEnumerable<object> UpdateCheckedValuesWithParents(IEnumerable<object> checkedValues)
     {
-        var checkedValues = GetCheckedValues();
-
         var p = ParentItem;
         while (p != null)
         {
@@ -286,6 +288,6 @@
             p = p.ParentItem;
         }
 
-        await Tree.SetCheckedValues(checkedValues);
+        return checkedValues;
     }
 }
