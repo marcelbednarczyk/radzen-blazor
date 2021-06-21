@@ -80,8 +80,8 @@
 
     internal async Task SetCheckedValues(IEnumerable<object> values)
     {
-        CheckedValues = values;
-        await CheckedValuesChanged.InvokeAsync(values);
+        CheckedValues = values.ToList();
+        await CheckedValuesChanged.InvokeAsync(CheckedValues);
     }
 
     [Parameter]
